@@ -37,8 +37,12 @@ function tagCreate(name) {
   return tag.save();
 }
 
-function answerCreate(text, ans_by, ans_date_time) {
-  answerdetail = {text:text, votes: 0};
+function answerCreate(text, ans_by, ans_date_time, comments) {
+  answerdetail = {
+    text:text,
+    votes: 0,
+    comments: comments,
+};
   if (ans_by != false) answerdetail.ans_by = ans_by;
   if (ans_date_time != false) answerdetail.ans_date_time = ans_date_time;
 
@@ -63,6 +67,17 @@ function questionCreate(title, text, tags, answers, asked_by, ask_date_time, vie
   let qstn = new Question(qstndetail);
   return qstn.save();
 }
+
+function commentsCreate(text, comment_by) {
+    cmtdetail = {
+      text: text,
+      comment_by: comment_by,
+      vote: 0,
+    }
+  
+    let cmt = new Comment(cmtdetail);
+    return cmt.save();
+  }
 
 // async function encrypt(pw) {
 //     const result =  await bcrypt.genSalt(saltRounds, function(err, salt) {
@@ -108,13 +123,17 @@ const populate = async () => {
   let t2 = await tagCreate('javascript');
   let t3 = await tagCreate('android-studio');
   let t4 = await tagCreate('shared-preferences');
-  let a1 = await answerCreate('React Router is mostly a wrapper around the history library. history handles interaction with the browser\'s window.history for you with its browser and hash histories. It also provides a memory history which is useful for environments that don\'t have a global history. This is particularly useful in mobile app development (react-native) and unit testing with Node.', 'hamkalo', false);
-  let a2 = await answerCreate('On my end, I like to have a single history object that I can carry even outside components. I like to have a single history.js file that I import on demand, and just manipulate it. You just have to change BrowserRouter to Router, and specify the history prop. This doesn\'t change anything for you, except that you have your own history object that you can manipulate as you want. You need to install history, the library used by react-router.', 'azad', false);
+  let c1 = await commentsCreate('Hi there', 'Jun');
+  let c2 = await commentsCreate('kill thread', 'stark');
+  let c3 = await commentsCreate('answer cmt1', 'Jun');
+  let c4 = await commentsCreate('answer cmt2', 'kin');
+  let a1 = await answerCreate('React Router is mostly a wrapper around the history library. history handles interaction with the browser\'s window.history for you with its browser and hash histories. It also provides a memory history which is useful for environments that don\'t have a global history. This is particularly useful in mobile app development (react-native) and unit testing with Node.', 'hamkalo', false, [c2, c3, c4]);
+  let a2 = await answerCreate('On my end, I like to have a single history object that I can carry even outside components. I like to have a single history.js file that I import on demand, and just manipulate it. You just have to change BrowserRouter to Router, and specify the history prop. This doesn\'t change anything for you, except that you have your own history object that you can manipulate as you want. You need to install history, the library used by react-router.', 'azad', false, [c3]);
   let a3 = await answerCreate('Consider using apply() instead; commit writes its data to persistent storage immediately, whereas apply will handle it in the background.', 'abaya', false);
-  let a4 = await answerCreate('YourPreference yourPrefrence = YourPreference.getInstance(context); yourPreference.saveData(YOUR_KEY,YOUR_VALUE);', 'alia', false);
-  let a5 = await answerCreate('I just found all the above examples just too confusing, so I wrote my own. ', 'sana', false);
-  let q1 = await questionCreate('Programmatically navigate using React router', 'the alert shows the proper index for the li clicked, and when I alert the variable within the last function I\'m calling, moveToNextImage(stepClicked), the same value shows but the animation isn\'t happening. This works many other ways, but I\'m trying to pass the index value of the list item clicked to use for the math to calculate.', [t1, t2], [a1, a2], 'Joji John', false, false, 'question1 summary');
-  let q2 = await questionCreate('android studio save string shared preference, start activity and load the saved string', 'I am using bottom navigation view but am using custom navigation, so my fragments are not recreated every time i switch to a different view. I just hide/show my fragments depending on the icon selected. The problem i am facing is that whenever a config change happens (dark/light theme), my app crashes. I have 2 fragments in this activity and the below code is what i am using to refrain them from being recreated.', [t3, t4, t2], [a3, a4, a5], 'saltyPeter', false, 121, 'question2 summary');
+  let a4 = await answerCreate('YourPreference yourPrefrence = YourPreference.getInstance(context); yourPreference.saveData(YOUR_KEY,YOUR_VALUE);', 'alia', false, [c1, c3]);
+  let a5 = await answerCreate('I just found all the above examples just too confusing, so I wrote my own. ', 'sana', false, [c3, c4]);
+  let q1 = await questionCreate('Programmatically navigate using React router', 'the alert shows the proper index for the li clicked, and when I alert the variable within the last function I\'m calling, moveToNextImage(stepClicked), the same value shows but the animation isn\'t happening. This works many other ways, but I\'m trying to pass the index value of the list item clicked to use for the math to calculate.', [t1, t2], [a1, a2], 'Joji John', false, false, 'question1 summary', [c1, c2]);
+  let q2 = await questionCreate('android studio save string shared preference, start activity and load the saved string', 'I am using bottom navigation view but am using custom navigation, so my fragments are not recreated every time i switch to a different view. I just hide/show my fragments depending on the icon selected. The problem i am facing is that whenever a config change happens (dark/light theme), my app crashes. I have 2 fragments in this activity and the below code is what i am using to refrain them from being recreated.', [t3, t4, t2], [a3, a4, a5], 'saltyPeter', false, 121, 'question2 summary', [c1]);
   await userCreate('admin', 'admin316@sbu.edu', 'unexpected', 100, [q1,q2]);
   if(db) db.close();
   console.log('done');

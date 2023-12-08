@@ -12,7 +12,8 @@ const answerSchema = new Schema({
         required: true
     },
     ans_date_time: {
-        type: Date
+        type: Date,
+        default: new Date()
     },
     votes: {
         type: Number,
