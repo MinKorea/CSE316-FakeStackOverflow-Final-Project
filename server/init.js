@@ -9,8 +9,8 @@
 let userArgs = process.argv.slice(2);
 
 if (!userArgs[0].startsWith('mongodb')) {
-    console.log('ERROR: You need to specify a valid mongodb URL as the first argument');
-    return
+  console.log('ERROR: You need to specify a valid mongodb URL as the first argument');
+  return
 }
 
 let Tag = require('./models/tags')
@@ -22,7 +22,7 @@ let Comment = require("./models/comments");
 
 let mongoose = require('mongoose');
 let mongoDB = userArgs[0];
-mongoose.connect(mongoDB, {useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
 mongoose.Promise = global.Promise;
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
@@ -38,7 +38,7 @@ function tagCreate(name) {
 }
 
 function answerCreate(text, ans_by, ans_date_time) {
-  answerdetail = {text:text, votes: 0};
+  answerdetail = { text: text, votes: 0 };
   if (ans_by != false) answerdetail.ans_by = ans_by;
   if (ans_date_time != false) answerdetail.ans_date_time = ans_date_time;
 
@@ -76,32 +76,32 @@ function questionCreate(title, text, tags, answers, asked_by, ask_date_time, vie
 
 async function userCreate(name, email, passwords, reputation, questions) {
 
-    let userdetail = {
-      name: name,
-      email: email,
-      password: passwords,
-      reputation: reputation,
-      questions: questions
-    }
-    let user = new User(userdetail);
-    
-    console.log("before bcrypt:" + user.password);
-    
-    user.password = await new Promise ((resolve, reject) => {
-        bcrypt.genSalt(saltRounds, function(err, salt) {
-            bcrypt.hash(passwords, salt, function(err, hash) {
-                if (err) reject(err)
-                resolve(hash)
-            // console.log("hash value inside: "+ hash);
-            // user.password = hash;
-            // console.log("password" + user.password);
-            // user.save();
-            });
-        })
-    });
-    console.log("out password" + user.password);
-    return user.save();
+  let userdetail = {
+    name: name,
+    email: email,
+    password: passwords,
+    reputation: reputation,
+    questions: questions
   }
+  let user = new User(userdetail);
+
+  console.log("before bcrypt:" + user.password);
+
+  user.password = await new Promise((resolve, reject) => {
+    bcrypt.genSalt(saltRounds, function (err, salt) {
+      bcrypt.hash(passwords, salt, function (err, hash) {
+        if (err) reject(err)
+        resolve(hash)
+        // console.log("hash value inside: "+ hash);
+        // user.password = hash;
+        // console.log("password" + user.password);
+        // user.save();
+      });
+    })
+  });
+  console.log("out password" + user.password);
+  return user.save();
+}
 
 const populate = async () => {
   let t1 = await tagCreate('react');
@@ -115,15 +115,15 @@ const populate = async () => {
   let a5 = await answerCreate('I just found all the above examples just too confusing, so I wrote my own. ', 'sana', false);
   let q1 = await questionCreate('Programmatically navigate using React router', 'the alert shows the proper index for the li clicked, and when I alert the variable within the last function I\'m calling, moveToNextImage(stepClicked), the same value shows but the animation isn\'t happening. This works many other ways, but I\'m trying to pass the index value of the list item clicked to use for the math to calculate.', [t1, t2], [a1, a2], 'Joji John', false, false, 'question1 summary');
   let q2 = await questionCreate('android studio save string shared preference, start activity and load the saved string', 'I am using bottom navigation view but am using custom navigation, so my fragments are not recreated every time i switch to a different view. I just hide/show my fragments depending on the icon selected. The problem i am facing is that whenever a config change happens (dark/light theme), my app crashes. I have 2 fragments in this activity and the below code is what i am using to refrain them from being recreated.', [t3, t4, t2], [a3, a4, a5], 'saltyPeter', false, 121, 'question2 summary');
-  await userCreate('admin', 'admin316@sbu.edu', 'unexpected', 100, [q1,q2]);
-  if(db) db.close();
+  await userCreate('admin', 'admin316@sbu.edu', 'unexpected', 100, [q1, q2]);
+  if (db) db.close();
   console.log('done');
 }
 
 populate()
   .catch((err) => {
     console.log('ERROR: ' + err);
-    if(db) db.close();
+    if (db) db.close();
   });
 
 console.log('processing ...');
