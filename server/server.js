@@ -3,6 +3,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cor = require("cors");
 const bcrypt = require("bcrypt");
+var session = require('express-session');
+var MongoDBStore = require('connect-mongodb-session')(session);
 const saltRounds = 10;
 
 var count = 0;
@@ -32,35 +34,38 @@ db.on('connected', function () {
 
 app.post("/new_user", async (req, res) => {
     let user = new User(req.body);
-    
+
     console.log("signal from server.js");
 
-    bcrypt.genSalt(saltRounds, function(err, salt) {
+    bcrypt.genSalt(saltRounds, function (err, salt) {
         console.log("did you pass here?")
-        bcrypt.hash(req.body.password, salt, function(err, hash) {
+        bcrypt.hash(req.body.password, salt, function (err, hash) {
             user.password = hash;
             user.save();
         })
-    })
-    
+    });
+
     console.log("passed all and sending now")
+    console.log(user);
     res.send(user);
 })
 
 app.post("/login", async (req, res) => {
-    let account = await User.findOne({email: req.body.email});
+
+    let account = await User.findOne({ email: req.body.email });
 
     // console.log("get into login post in server.js")
     // console.log("account.pw: " + account.password);
 
-    if (account.length === 0) {
-        // console.log("User not found")
+    console.log(account);
+
+    if (account === null) {
         res.send("notMatched")
     }
     else {
         // console.log("User found")
         let pw = account.password;
-        bcrypt.compare(req.body.password, pw, function(err, result) {
+        bcrypt.compare(req.body.password, pw, function (err, result) {
             // console.log("result: "+ result)
             if (result == false) {
                 // console.log("User found but pw is not matched");
@@ -73,6 +78,27 @@ app.post("/login", async (req, res) => {
             }
         });
     }
+
+    // if (account.length === 0) {
+    //     // console.log("User not found")
+    //     res.send("notMatched")
+    // }
+    // else {
+    //     // console.log("User found")
+    //     let pw = account.password;
+    //     bcrypt.compare(req.body.password, pw, function (err, result) {
+    //         // console.log("result: "+ result)
+    //         if (result == false) {
+    //             // console.log("User found but pw is not matched");
+    //             res.send("pwNotMatched");
+    //         }
+    //         else {
+    //             // console.log("User found and pw is matched");
+    //             // console.log(pw);
+    //             res.send(account);
+    //         }
+    //     });
+    // }
 })
 
 app.get("/", async (req, res) => {
@@ -122,11 +148,11 @@ app.post("/update_quest_answer", async (req, res) => {
 })
 
 app.post("/new_tag_eval", async (req, res) => {
-    let find_tags = await Tag.findOne({name: req.body.tag_name});
+    let find_tags = await Tag.findOne({ name: req.body.tag_name });
     let target_q = await Question.findById(req.body.q_id);
 
     if (find_tags === null) {
-        let new_tag = new Tag({name:req.body.tag_name})
+        let new_tag = new Tag({ name: req.body.tag_name })
         await new_tag.save();
         // res.send(new_tag._id);
         target_q.tags.push(new_tag._id);

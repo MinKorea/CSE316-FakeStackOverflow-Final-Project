@@ -11,8 +11,8 @@ export default class RegisterPage extends React.Component {
 
     handle_name(e) {
         this.props.name_handler(e.target.value);
-      }
-    
+    }
+
     handle_account(e) {
         this.props.account_handler(e.target.value);
     }
@@ -25,7 +25,7 @@ export default class RegisterPage extends React.Component {
         this.props.verify_handler(e.target.value);
     }
 
-    render(){
+    render() {
         return (
             <>
                 <div>
@@ -39,22 +39,22 @@ export default class RegisterPage extends React.Component {
                 <br></br>
                 <div>
                     <p id='register_titles'>Username</p>
-                    <textarea rows={"1"} cols={"30"} id = "register_username" placeholder="Username" onChange={this.handle_name}></textarea>
+                    <textarea rows={"1"} cols={"30"} id="register_username" placeholder="Username" onChange={this.handle_name}></textarea>
                     <br></br>
                 </div>
                 <div>
                     <p id='register_titles'>Account</p>
-                    <textarea rows={"1"} cols={"30"} id = "register_account" placeholder="example_user@stonybrook.edu" onChange={this.handle_account}></textarea>
+                    <textarea rows={"1"} cols={"30"} id="register_account" placeholder="example_user@stonybrook.edu" onChange={this.handle_account}></textarea>
                     <br></br>
                 </div>
                 <div>
                     <p id='register_titles'>Password</p>
-                    <textarea rows={"1"} cols={"30"} id = "register_pw" placeholder="" onChange={this.handle_pw}></textarea>
+                    <textarea rows={"1"} cols={"30"} id="register_pw" placeholder="" onChange={this.handle_pw}></textarea>
                     <br></br>
                 </div>
                 <div>
                     <p id='register_titles'>Password Verification</p>
-                    <textarea rows={"1"} cols={"30"} id = "register_pw_verify" placeholder="" onChange={this.handle_verify}></textarea>
+                    <textarea rows={"1"} cols={"30"} id="register_pw_verify" placeholder="" onChange={this.handle_verify}></textarea>
                     <br></br>
                 </div>
                 <br></br>
@@ -63,7 +63,7 @@ export default class RegisterPage extends React.Component {
                     <br></br>
                     <br></br>
                     <br></br>
-                    <button id='register_signUp_btn' onClick = {this.props.add_user}>Sign Up</button>
+                    <button id='register_signUp_btn' onClick={this.props.add_user}>Sign Up</button>
                 </div>
             </>
         )

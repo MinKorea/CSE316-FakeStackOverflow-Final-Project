@@ -35,7 +35,7 @@ export default class FakeStackOverflow extends React.Component {
       nu_name: "",
       nu_pw: "",
       nu_account: "",
-      nu_pw_valify: "",
+      nu_pw_verify: "",
       nu_reputation: 0
     }
   }
@@ -131,19 +131,19 @@ export default class FakeStackOverflow extends React.Component {
 
   // ################# User handler section ####################
   handle_name = (name) => {
-    this.setState({nu_name: name})
+    this.setState({ nu_name: name })
   }
 
   handle_account = (account) => {
-    this.setState({nu_account: account})
+    this.setState({ nu_account: account })
   }
 
   handle_pw = (pw) => {
-    this.setState({nu_pw: pw})
+    this.setState({ nu_pw: pw })
   }
 
   handle_verify = (verify) => {
-    this.setState({nu_pw_valify: verify})
+    this.setState({ nu_pw_verify: verify })
   }
 
   // ################ New Question handler section ####################
@@ -174,31 +174,34 @@ export default class FakeStackOverflow extends React.Component {
 
   // ################ Add to Model section ####################
 
-   // add new user function
-   evaluate_new_user = async () => {
+  // add new user function
+  evaluate_new_user = async () => {
     let err = [];
-
+    console.log(this.state);
     // check filling
-    if (this.state.nu_account.length === 0 || this.state.nu_name.length === 0 || this.state.nu_pw.length === 0 || this.state.nu_pw_valify.length === 0) {
+    if (this.state.nu_account.length === 0 || this.state.nu_name.length === 0 || this.state.nu_pw.length === 0 || this.state.nu_pw_verify.length === 0) {
       err.push("Please fill every information\n");
+      alert("Please fill every information\n");
     }
 
     // double check pw
-    if (this.state.nu_pw !== this.state.nu_pw_valify || this.state.nu_pw.length !== this.state.nu_pw_valify.length) {
+    if (this.state.nu_pw !== this.state.nu_pw_verify || this.state.nu_pw.length !== this.state.nu_pw_verify.length) {
       err.push("Passwords are not same. Please type again\n");
+      alert("Passwords are not same. Please type again\n");
     }
 
     // check pw containing email id and username
-    let account_id = this.state.nu_account.substring(0, this.state.nu_account.indexOf("@")); 
+    let account_id = this.state.nu_account.substring(0, this.state.nu_account.indexOf("@"));
 
     if (this.state.nu_pw.match(account_id) || this.state.nu_pw.match(this.state.nu_name)) {
       err.push("Password can't contain email ID or Username\n");
+      alert("Password can't contain email ID or Username\n");
     }
-    
+
     let user_for_register = this.state.data.users;
     var count = 0;
     user_for_register.forEach(() => {
-      for(let i = 0; i < user_for_register.length; i++) {
+      for (let i = 0; i < user_for_register.length; i++) {
         if (this.state.nu_account === user_for_register[i].email) {
           count += 1;
         }
@@ -206,27 +209,28 @@ export default class FakeStackOverflow extends React.Component {
     })
     if (count !== 0) {
       err.push("It is duplicated account. Use another email please\n");
-    }
-    
-    // send err messages
-    if (err.length !== 0){
-      this.handle_error(err);
+      alert("It is duplicated account. Use another email please\n");
     }
 
-    else{
-      axios.post("http://localhost:8000/new_user/", 
-      {
-        name: this.state.nu_name,
-        email: this.state.nu_account,
-        password: this.state.nu_pw,
-        reputation: 0
-      }).then(res => {
-        console.log(res);
-        this.componentDidMount();           // need to check
-        this.setState({page_num: 98})
-      });
-      this.handle_error("");
-    } 
+    // send err messages
+    if (err.length !== 0) {
+      // this.handle_error(err);
+      console.log(err);
+    }
+    else {
+      axios.post("http://localhost:8000/new_user/",
+        {
+          name: this.state.nu_name,
+          email: this.state.nu_account,
+          password: this.state.nu_pw,
+          reputation: 0
+        }).then(res => {
+          console.log(res);
+          this.componentDidMount();           // need to check
+          this.setState({ page_num: 98 })
+        });
+      // this.handle_error("");
+    }
   }
 
   // login function
@@ -235,30 +239,31 @@ export default class FakeStackOverflow extends React.Component {
 
     // console.log("input id: " + this.state.nu_account);
     // console.log("input pw: " + this.state.nu_pw);
-    axios.post("http://localhost:8000/login/", 
-    {
-      email: this.state.nu_account,
-      password: this.state.nu_pw
-    }).then(res => 
-    {
-      console.log("get into login");
-      if (res.data === "notMatched") {
-        err.push("Account doesn't exist\n");
-        this.handle_error(err);
-      }
-      else if (res.data === "pwNotMatched") {
-        err.push("Password is not matched with account");
-        this.handle_error(err);
-      }
-      else {
-        console.log("login start");
-        this.setState({nu_name: res.data.name});
-        this.setState({nu_reputation: res.data.reputation});
-        this.setState({page_num: 0});
-        this.handle_error("");
-        console.log("login end");
-      }
-    });
+    axios.post("http://localhost:8000/login/",
+      {
+        email: this.state.nu_account,
+        password: this.state.nu_pw
+      }).then(res => {
+        console.log("get into login");
+        if (res.data === "notMatched") {
+          err.push("Account doesn't exist\n");
+          alert("Account doesn't exist\n");
+          // this.handle_error(err);
+        }
+        else if (res.data === "pwNotMatched") {
+          err.push("Password is not matched with account");
+          alert("Password is not matched with account");
+          // this.handle_error(err);
+        }
+        else {
+          console.log("login start");
+          this.setState({ nu_name: res.data.name });
+          this.setState({ nu_reputation: res.data.reputation });
+          this.setState({ page_num: 0 });
+          // this.handle_error("");
+          console.log("login end");
+        }
+      });
   }
 
   // increase view of question
@@ -504,19 +509,19 @@ export default class FakeStackOverflow extends React.Component {
     console.log(this.state.data);
 
     if (this.state.page_num === 100) {
-      main_page = <WelcomePage main_question_page = {this.display_main_page} register = {this.display_register_page} user_login = {this.display_login_page} />
+      main_page = <WelcomePage main_question_page={this.display_main_page} register={this.display_register_page} user_login={this.display_login_page} />
     }
 
     // register page
     else if (this.state.page_num === 99) {
-      main_page = <RegisterPage name_handler = {this.handle_name} account_handler = {this.handle_account} pw_handler = {this.handle_pw} verify_handler = {this.handle_verify} 
-      add_user = {this.evaluate_new_user}/>       // after evaluate, success -> display login page
+      main_page = <RegisterPage name_handler={this.handle_name} account_handler={this.handle_account} pw_handler={this.handle_pw} verify_handler={this.handle_verify}
+        add_user={this.evaluate_new_user} />       // after evaluate, success -> display login page
     }
 
     // login page
     else if (this.state.page_num === 98) {
-      main_page = <LoginPage main_question_page = {this.display_main_page} account_handler = {this.handle_account} pw_handler = {this.handle_pw} 
-      try_login = {this.evaluate_user_login}/>
+      main_page = <LoginPage main_question_page={this.display_main_page} account_handler={this.handle_account} pw_handler={this.handle_pw}
+        try_login={this.evaluate_user_login} />
     }
 
     // main page
@@ -530,7 +535,7 @@ export default class FakeStackOverflow extends React.Component {
     // tag page
     else if (this.state.page_num === 1) {
       banner = <Banner main_question_page={this.display_main_page} main_tag_page={this.display_tag_page} search_handler={this.searching_by_input}
-        q_color={this.state.q_btn_color} t_color={this.state.t_btn_color} />
+        q_color={this.state.q_btn_color} t_color={this.state.t_btn_color} login_page={this.display_login_page} />
       main_page = <TagPage main_question_page={this.display_main_page} ask_question={this.display_ask_question} data={this.state.data} />
     }
 

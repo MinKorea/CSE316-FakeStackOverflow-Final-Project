@@ -17,6 +17,7 @@ export default class Banner extends React.Component {
     render() {
         return (
             <div>
+                <button id='login' className='side_content' style={{ backgroundColor: this.props.q_color }} onClick={this.props.login_page}>Login</button>
                 <h1 id='title'>Fake Stack Overflow</h1>
                 <input id="search_input" type="text" placeholder="Search..." onKeyDown={this.searching_by_input}></input>
 

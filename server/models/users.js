@@ -23,7 +23,7 @@ const userSchema = new Schema({
     }
 });
 
-userSchema.virtual('url').get(function() {
+userSchema.virtual('url').get(function () {
     return "posts/user/" + this._id;
 });
 
