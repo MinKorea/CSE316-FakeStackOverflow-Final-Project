@@ -238,12 +238,14 @@ body {
     margin-left: 30px;
 }
 
-#q_content_top {
-    padding-top: 30px;
-    margin-bottom: 70px;
+#q_section1 {
+    display: inline-block;
+    margin-left: 20px;
+    margin-top: 50px;
 }
 
-#q_content_bottom {
+#q_section2 {
+    display: inline-block;
     margin-bottom: 30px;
 }
 
@@ -252,34 +254,41 @@ body {
 }
 
 #q_content_num_ans {
-    display: inline-block;
-}
-
-#q_content_title {
-    display: inline-block;
-    margin-left: 60px;
+    /* display: inline-block; */
+    margin-bottom: 30px;
 }
 
 #q_content_num_view {
-    display: inline-block;
+    /* display: inline-block; */
+    margin-top: 50px;
     text-align: center;
-    position: relative;
-    bottom: 40px;
+    /* position: relative; */
+    /* bottom: 40px; */
 }
 
+#q_content_title {
+    /* display: inline-block; */
+    margin-left: 20px;
+}
+
+
 #q_content_text {
-    display: inline-block;
-    width: 40%;
-    margin-left: 80px;
+    /* display: inline-block; */
+    /* width: 35%; */
+    margin-left: 20px;
 }
 
 #q_content_user {
     color: red;
 }
 
+#q_content_title_and_text {
+    display: inline-block;
+    width: 500px;
+    margin-left: 40px;
+}
+
 #q_content_user_and_time {
-    /* float: right;
-    margin-right: 250px; */
     display: inline-block;
     margin-left: 410px;
 }
@@ -299,8 +308,13 @@ body {
     padding: 35px 30px;
 }
 
+#q_content_ans_vote {
+    display: inline-block;
+    margin-right: 5%;
+}
+
 #q_content_ans_text {
-    width: 70%;
+    width: 50%;
     display: inline-block;
 }
 

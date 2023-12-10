@@ -22,7 +22,7 @@ export default class FakeStackOverflow extends React.Component {
       nq_title: "",
       nq_text: "",
       nq_tags: "",
-      nq_user: "",
+      nq_summary: "",
       quest_id: "",
       tag_id: "",
       ans_text: "",
@@ -36,7 +36,8 @@ export default class FakeStackOverflow extends React.Component {
       nu_pw: "",
       nu_account: "",
       nu_pw_valify: "",
-      nu_reputation: 0
+      nu_reputation: 0,
+      vote_target: ""
     }
   }
 
@@ -163,6 +164,10 @@ export default class FakeStackOverflow extends React.Component {
     this.setState({ nq_user: user })
   }
 
+  handle_summary = (summary) => {
+    this.setState({ nq_summary: summary})
+  }
+
   // ################# Answer handler section ####################
   handle_ans_text = (text) => {
     this.setState({ ans_text: text })
@@ -170,6 +175,11 @@ export default class FakeStackOverflow extends React.Component {
 
   handle_ans_name = (name) => {
     this.setState({ ans_name: name })
+  }
+
+  // ################# Vote handler section ####################
+  handle_vote = (vote) => {
+    this.setState({ vote_target: vote })
   }
 
   // ################ Add to Model section ####################
@@ -276,16 +286,48 @@ export default class FakeStackOverflow extends React.Component {
     // });
   }
 
+  // increase vote of question
+  increase_vote = async (id) => {
+    await axios.post("http://localhost:8000/vote_inc", {
+      q_id: id
+    })
+
+    console.log("Increase_view_post passed");
+
+    await this.componentDidMount();
+
+    // this.state.data.questions.forEach(q => {
+    //   if (q._id === id) console.log(q);
+    // });
+  }
+
+  // decrease vote of question
+  decrease_vote = async (id) => {
+    await axios.post("http://localhost:8000/vote_dec", {
+      q_id: id
+    })
+
+    console.log("Decrease_view_post passed");
+
+    await this.componentDidMount();
+
+    // this.state.data.questions.forEach(q => {
+    //   if (q._id === id) console.log(q);
+    // });
+  }
+
   // add new question
   add_new_question = () => {
     let new_title = this.state.nq_title;
     let new_text = help.handling_hyperlinks(this.state.nq_text);
     let new_tags = this.state.nq_tags;
-    let new_username = this.state.nq_user;
+    let new_summary = this.state.nq_summary;
+    let new_username = this.state.nu_name;
 
     let title_empty_check = true;
     let text_empty_check = true;
-    let username_empty_check = true;
+    // let username_empty_check = true;
+    let summary_empty_check = true;
     let new_tag_length_check = true;
 
     console.log("post question function");
@@ -299,8 +341,8 @@ export default class FakeStackOverflow extends React.Component {
       if (new_text[i] !== " ") text_empty_check = false;
     }
 
-    for (let i = 0; i < new_username.length; i++) {
-      if (new_username[i] !== " ") username_empty_check = false;
+    for (let i = 0; i < new_summary.length; i++) {
+      if (new_summary[i] !== " ") summary_empty_check = false;
     }
 
     new_tags = new_tags.toLowerCase();
@@ -329,10 +371,12 @@ export default class FakeStackOverflow extends React.Component {
 
     if (tags_arr.length > 5) alert("Tags should be less or equal than 5.");
     else if (!new_tag_length_check) alert("The tag cannot be more than 10 characters.")
-    else if (new_title.length > 100) alert("The title should not be more than 100 characters");
+    else if (new_title.length > 50) alert("The title should not be more than 50 characters");
+    else if (new_summary.length > 140) alert("The summary should not be more than 140 characters");
     else if (title_empty_check) alert("The title should not be empty");
     else if (text_empty_check) alert("The question text should not be empty");
-    else if (username_empty_check) alert("The username should not be empty");
+    else if (summary_empty_check) alert("The summary should not be empty");
+    else if (new_username === "") alert("Guest can not post question")
     else if (new_text === "hyperlink_empty") alert("Insert the hyperlink inside of parentheses");
     else if (new_text === "invalid_hyperlink") alert("Hyperlink should start with http:// or https://");
     else {
@@ -342,7 +386,8 @@ export default class FakeStackOverflow extends React.Component {
           text: new_text,
           tags: [],
           asked_by: new_username,
-          ask_date_time: new Date()
+          ask_date_time: new Date(),
+          summary: new_summary,
         }
       }).then((res) => {
         for (let i = 0; i < tags_arr.length; i++) {
@@ -538,8 +583,8 @@ export default class FakeStackOverflow extends React.Component {
     else if (this.state.page_num === 2) {
       banner = <Banner main_question_page={this.display_main_page} main_tag_page={this.display_tag_page} main_pages={this.main_page} search_handler={this.searching_by_input} />
       main_page = <AskQuestion main_question_page={this.display_main_page} title_handler={this.handle_title} text_handler={this.handle_text}
-        tag_handler={this.handle_tag} user_handler={this.handle_user} title={this.state.nq_title} text={this.state.nq_text} tags={this.state.nq_tags}
-        user={this.state.nq_user} add_question={this.add_new_question} />
+        tag_handler={this.handle_tag} summary_handler={this.handle_summary} title={this.state.nq_title} text={this.state.nq_text} tags={this.state.nq_tags}
+        summary={this.state.nq_summary} add_question={this.add_new_question} />
     }
 
     // question content page
@@ -547,7 +592,7 @@ export default class FakeStackOverflow extends React.Component {
       // console.log("question id: "+this.state.quest_id);
       banner = <Banner main_question_page={this.display_main_page} main_tag_page={this.display_tag_page} main_pages={this.main_page} search_handler={this.searching_by_input} />
       main_page = <QuestionContent ident={this.state.quest_id} data={this.state.data} ask_question={this.display_ask_question}
-        answer_question={this.display_answer_question} />
+        answer_question={this.display_answer_question} up_vote={this.increase_vote} down_vote={this.decrease_vote} target_vote={this.handle_vote} vote={this.state.vote_target}/>
     }
 
     // Answer the question page

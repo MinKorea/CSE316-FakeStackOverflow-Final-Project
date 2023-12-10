@@ -77,6 +77,7 @@ export default class MainQuestionPage extends React.Component {
                 <div id="section1">
                     <p id="quest_num_ans">{quest.answers.length} answers</p>
                     <p id="quest_num_view">{quest.views} views</p>
+                    <p id="quest_num_vote">{quest.votes} votes</p>
                 </div>
 
                 <div id="section2">

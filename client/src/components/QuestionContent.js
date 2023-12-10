@@ -36,6 +36,11 @@ export default class QuestionContent extends React.Component {
                 q_page.push(
                     <div id="q_content_answers" key={a._id}>
                         <div>
+                            <div id="q_content_ans_vote">
+                                <button onClick={this.props.up_vote}>up</button>
+                                <p id='q_content_ans_num_vote'>{a.votes} votes</p>
+                                <button onClick={this.props.down_vote}>down</button>
+                            </div>
                             <p id="q_content_ans_text" dangerouslySetInnerHTML={{ __html: a.text.replace(/\[([\w\s\d]+)\]\((https?:\/\/[\w\d./?=#]+)\)/g, '<a href="$2" target="_blank">$1</a>') }}></p>
                             <div id="content_section">
                                 <p id="q_content_ans_by">{a.ans_by}</p>
@@ -52,19 +57,28 @@ export default class QuestionContent extends React.Component {
 
                 <div id="question_content_page">
                     <div id="q_content_area">
-                        <div className="space" id="q_content_top">
+                        <div id="q_section1">
+                            <button onClick={this.props.up_vote}>up</button>
+                            <h3 id='q_content_num_vote'>{q.votes} votes</h3>
+                            <button onClick={this.props.down_vote}>down</button>
+                            <br></br>
+                            <br></br>
                             <h3 id='q_content_num_ans'>{q.answers.length} answers</h3>
-                            <h3 id='q_content_title'>{q.title}</h3>
+                            <h3 id='q_content_num_view'>{q.views} views</h3>
                         </div>
                         <button className="askQ" id='askQ_cont' onClick={this.props.ask_question}>Ask Question</button>
-                        <div className="space" id="q_content_bottom">
-                            <h3 id='q_content_num_view'>{q.views} views</h3>
-                            <p id='q_content_text' dangerouslySetInnerHTML={{ __html: q.text.replace(/\[([\w\s\d]+)\]\((https?:\/\/[\w\d./?=#]+)\)/g, '<a href="$2" target="_blank">$1</a>') }}></p>
+                        <div className="space" id="q_section2">
+                            {/* <h3 id='q_content_num_view'>{q.views} views</h3> */}
+                            <div id="q_content_title_and_text">
+                                <h3 id='q_content_title'>{q.title}</h3>
+                                <p id='q_content_text' dangerouslySetInnerHTML={{ __html: q.text.replace(/\[([\w\s\d]+)\]\((https?:\/\/[\w\d./?=#]+)\)/g, '<a href="$2" target="_blank">$1</a>') }}></p>
+                            </div>
                             <div id="q_content_user_and_time">
                                 <p id='q_content_user'>{q.asked_by}</p>
                                 <p id="q_content_time">asked {help.time_log(q.ask_date_time)}</p>
                             </div>
                         </div>
+                        
                     </div>
                     <div id='q_content_answer_area'>
                         {q_page}
