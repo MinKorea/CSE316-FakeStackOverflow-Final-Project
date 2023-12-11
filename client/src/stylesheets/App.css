@@ -2,7 +2,7 @@
 
 body {
     margin: 0;
-}  
+}
 
 #title {
     background-color: lightgrey;
@@ -11,6 +11,15 @@ body {
     font-size: xx-large;
     padding: 40px 35px;
     margin: 0%;
+    border: 1px solid black;
+}
+
+#log {
+    float: left;
+    margin-top: 30px;
+    margin-left: 50px;
+    background-color: lightgrey;
+    color: black;
     border: 1px solid black;
 }
 
@@ -90,6 +99,17 @@ body {
     margin-left: 33%;
     /* position: absolute; */
 
+}
+
+#prev_button {
+    margin-bottom: 20px;
+    margin-left: 20px;
+}
+
+#next_button {
+    margin-bottom: 20px;
+    margin-right: 20px;
+    float: right;
 }
 
 .sort_buttons {
@@ -238,12 +258,14 @@ body {
     margin-left: 30px;
 }
 
-#q_content_top {
-    padding-top: 30px;
-    margin-bottom: 70px;
+#q_section1 {
+    display: inline-block;
+    margin-left: 20px;
+    margin-top: 50px;
 }
 
-#q_content_bottom {
+#q_section2 {
+    display: inline-block;
     margin-bottom: 30px;
 }
 
@@ -252,34 +274,41 @@ body {
 }
 
 #q_content_num_ans {
-    display: inline-block;
-}
-
-#q_content_title {
-    display: inline-block;
-    margin-left: 60px;
+    /* display: inline-block; */
+    margin-bottom: 30px;
 }
 
 #q_content_num_view {
-    display: inline-block;
+    /* display: inline-block; */
+    margin-top: 50px;
     text-align: center;
-    position: relative;
-    bottom: 40px;
+    /* position: relative; */
+    /* bottom: 40px; */
 }
 
+#q_content_title {
+    /* display: inline-block; */
+    margin-left: 20px;
+}
+
+
 #q_content_text {
-    display: inline-block;
-    width: 40%;
-    margin-left: 80px;
+    /* display: inline-block; */
+    /* width: 35%; */
+    margin-left: 20px;
 }
 
 #q_content_user {
     color: red;
 }
 
+#q_content_title_and_text {
+    display: inline-block;
+    width: 500px;
+    margin-left: 40px;
+}
+
 #q_content_user_and_time {
-    /* float: right;
-    margin-right: 250px; */
     display: inline-block;
     margin-left: 410px;
 }
@@ -299,8 +328,13 @@ body {
     padding: 35px 30px;
 }
 
+#q_content_ans_vote {
+    display: inline-block;
+    margin-right: 5%;
+}
+
 #q_content_ans_text {
-    width: 70%;
+    width: 50%;
     display: inline-block;
 }
 
@@ -404,10 +438,10 @@ body {
     position: absolute;
     left: 45%;
     font-size: 18px;
-    border: 1px solid black; 
-    color: white; 
-    padding: 15px 25px; 
-    cursor: pointer; 
+    border: 1px solid black;
+    color: white;
+    padding: 15px 25px;
+    cursor: pointer;
     background-color: dodgerblue;
     border-radius: 7%;
 }
@@ -417,10 +451,10 @@ body {
     position: absolute;
     left: 45.7%;
     font-size: 18px;
-    border: 1px solid black; 
-    color: white; 
-    padding: 15px 25px; 
-    cursor: pointer; 
+    border: 1px solid black;
+    color: white;
+    padding: 15px 25px;
+    cursor: pointer;
     background-color: dodgerblue;
     border-radius: 7%;
 }
@@ -430,10 +464,10 @@ body {
     position: absolute;
     left: 44.35%;
     font-size: 18px;
-    border: 1px solid black; 
-    color: white; 
-    padding: 15px 25px; 
-    cursor: pointer; 
+    border: 1px solid black;
+    color: white;
+    padding: 15px 25px;
+    cursor: pointer;
     background-color: dodgerblue;
     border-radius: 7%;
 }
@@ -481,10 +515,10 @@ body {
     position: absolute;
     left: 47%;
     font-size: 18px;
-    border: 1px solid black; 
-    color: white; 
-    padding: 15px 25px; 
-    cursor: pointer; 
+    border: 1px solid black;
+    color: white;
+    padding: 15px 25px;
+    cursor: pointer;
     background-color: dodgerblue;
     border-radius: 7%;
 }
@@ -507,12 +541,14 @@ body {
     font-family: Arial, Helvetica, sans-serif;
     display: inline-block;
     font-size: x-large;
+    width: 30%;
 }
 
 #login_pw {
     font-family: Arial, Helvetica, sans-serif;
     display: inline-block;
     font-size: x-large;
+    width: 30%;
 }
 
 #login_signIn_btn {
@@ -520,10 +556,10 @@ body {
     position: absolute;
     left: 47%;
     font-size: 18px;
-    border: 1px solid black; 
-    color: white; 
-    padding: 15px 25px; 
-    cursor: pointer; 
+    border: 1px solid black;
+    color: white;
+    padding: 15px 25px;
+    cursor: pointer;
     background-color: dodgerblue;
     border-radius: 7%;
 }

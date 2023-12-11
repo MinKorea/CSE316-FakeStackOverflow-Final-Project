@@ -22,7 +22,7 @@ export default class FakeStackOverflow extends React.Component {
       nq_title: "",
       nq_text: "",
       nq_tags: "",
-      nq_user: "",
+      nq_summary: "",
       quest_id: "",
       tag_id: "",
       ans_text: "",
@@ -36,7 +36,8 @@ export default class FakeStackOverflow extends React.Component {
       nu_pw: "",
       nu_account: "",
       nu_pw_verify: "",
-      nu_reputation: 0
+      nu_reputation: 0,
+      vote_target: ""
     }
   }
 
@@ -61,6 +62,12 @@ export default class FakeStackOverflow extends React.Component {
   }
 
   // ################# Display pages section ####################
+  display_welcome_page = () => {
+    this.setState(() => ({
+      page_num: 100
+    }))
+  }
+
   display_register_page = () => {
     this.setState(() => ({
       page_num: 99
@@ -101,7 +108,7 @@ export default class FakeStackOverflow extends React.Component {
   }
 
   display_question_content = async (id) => {
-    await this.increase_view(id);
+    if (this.state.page_num === 0) await this.increase_view(id);
 
     // this.state.data.questions.forEach(q => {
     //   if (q._id === id) console.log(q);
@@ -146,6 +153,16 @@ export default class FakeStackOverflow extends React.Component {
     this.setState({ nu_pw_verify: verify })
   }
 
+  handle_user_empty = () => {
+    this.setState({
+      nu_name: "",
+      nu_account: "",
+      nu_pw: "",
+      nu_pw_verify: "",
+      nu_reputation: 0
+    })
+  }
+
   // ################ New Question handler section ####################
   handle_title = (title) => {
     this.setState({ nq_title: title })
@@ -163,6 +180,10 @@ export default class FakeStackOverflow extends React.Component {
     this.setState({ nq_user: user })
   }
 
+  handle_summary = (summary) => {
+    this.setState({ nq_summary: summary })
+  }
+
   // ################# Answer handler section ####################
   handle_ans_text = (text) => {
     this.setState({ ans_text: text })
@@ -170,6 +191,11 @@ export default class FakeStackOverflow extends React.Component {
 
   handle_ans_name = (name) => {
     this.setState({ ans_name: name })
+  }
+
+  // ################# Vote handler section ####################
+  handle_vote = (vote) => {
+    this.setState({ vote_target: vote })
   }
 
   // ################ Add to Model section ####################
@@ -281,16 +307,48 @@ export default class FakeStackOverflow extends React.Component {
     // });
   }
 
+  // increase vote of question
+  increase_vote = async (id) => {
+    await axios.post("http://localhost:8000/vote_inc", {
+      q_id: id
+    })
+
+    console.log("Increase_view_post passed");
+
+    await this.componentDidMount();
+
+    // this.state.data.questions.forEach(q => {
+    //   if (q._id === id) console.log(q);
+    // });
+  }
+
+  // decrease vote of question
+  decrease_vote = async (id) => {
+    await axios.post("http://localhost:8000/vote_dec", {
+      q_id: id
+    })
+
+    console.log("Decrease_view_post passed");
+
+    await this.componentDidMount();
+
+    // this.state.data.questions.forEach(q => {
+    //   if (q._id === id) console.log(q);
+    // });
+  }
+
   // add new question
   add_new_question = () => {
     let new_title = this.state.nq_title;
     let new_text = help.handling_hyperlinks(this.state.nq_text);
     let new_tags = this.state.nq_tags;
-    let new_username = this.state.nq_user;
+    let new_summary = this.state.nq_summary;
+    let new_username = this.state.nu_name;
 
     let title_empty_check = true;
     let text_empty_check = true;
-    let username_empty_check = true;
+    // let username_empty_check = true;
+    let summary_empty_check = true;
     let new_tag_length_check = true;
 
     console.log("post question function");
@@ -304,8 +362,8 @@ export default class FakeStackOverflow extends React.Component {
       if (new_text[i] !== " ") text_empty_check = false;
     }
 
-    for (let i = 0; i < new_username.length; i++) {
-      if (new_username[i] !== " ") username_empty_check = false;
+    for (let i = 0; i < new_summary.length; i++) {
+      if (new_summary[i] !== " ") summary_empty_check = false;
     }
 
     new_tags = new_tags.toLowerCase();
@@ -334,10 +392,12 @@ export default class FakeStackOverflow extends React.Component {
 
     if (tags_arr.length > 5) alert("Tags should be less or equal than 5.");
     else if (!new_tag_length_check) alert("The tag cannot be more than 10 characters.")
-    else if (new_title.length > 100) alert("The title should not be more than 100 characters");
+    else if (new_title.length > 50) alert("The title should not be more than 50 characters");
+    else if (new_summary.length > 140) alert("The summary should not be more than 140 characters");
     else if (title_empty_check) alert("The title should not be empty");
     else if (text_empty_check) alert("The question text should not be empty");
-    else if (username_empty_check) alert("The username should not be empty");
+    else if (summary_empty_check) alert("The summary should not be empty");
+    else if (new_username === "") alert("Guest can not post question")
     else if (new_text === "hyperlink_empty") alert("Insert the hyperlink inside of parentheses");
     else if (new_text === "invalid_hyperlink") alert("Hyperlink should start with http:// or https://");
     else {
@@ -347,7 +407,8 @@ export default class FakeStackOverflow extends React.Component {
           text: new_text,
           tags: [],
           asked_by: new_username,
-          ask_date_time: new Date()
+          ask_date_time: new Date(),
+          summary: new_summary,
         }
       }).then((res) => {
         for (let i = 0; i < tags_arr.length; i++) {
@@ -356,8 +417,13 @@ export default class FakeStackOverflow extends React.Component {
             q_id: res.data
           })
         }
+        axios.post("http://localhost:8000/add_user_question/", {
+          email: this.state.nu_account,
+          q_id: res.data
+        });
         this.componentDidMount();
         this.display_main_page();
+
       });
     }
   }
@@ -366,7 +432,7 @@ export default class FakeStackOverflow extends React.Component {
   add_new_answer = () => {
     let target_quest_id = this.state.quest_id;
     let new_ans_text = help.handling_hyperlinks(this.state.ans_text);
-    let new_ans_username = this.state.ans_name;
+    let new_ans_username = this.state.nu_name;
 
     console.log(new_ans_text);
     console.log(new_ans_username);
@@ -395,6 +461,7 @@ export default class FakeStackOverflow extends React.Component {
       }).then((res) => {
         console.log("Then Passed");
         axios.post("http://localhost:8000/update_quest_answer/", {
+          email: this.state.nu_account,
           ans_id: res.data,
           q_id: target_quest_id
         });
@@ -403,9 +470,9 @@ export default class FakeStackOverflow extends React.Component {
         console.log(target_quest_id);
       }).then(() => {
         console.log("just before go back to content page");
-        this.componentDidMount();
-        this.display_question_content(target_quest_id);
       });
+      this.componentDidMount();
+      this.display_question_content(target_quest_id);
     }
   }
 
@@ -507,9 +574,11 @@ export default class FakeStackOverflow extends React.Component {
     let main_page = null;
     let banner = null;
     console.log(this.state.data);
+    console.log(this.state.nu_name);
 
     if (this.state.page_num === 100) {
-      main_page = <WelcomePage main_question_page={this.display_main_page} register={this.display_register_page} user_login={this.display_login_page} />
+      main_page = <WelcomePage main_question_page={this.display_main_page} register={this.display_register_page} user_login={this.display_login_page}
+        user_empty={this.handle_user_empty} />
     }
 
     // register page
@@ -530,34 +599,46 @@ export default class FakeStackOverflow extends React.Component {
       main_page = <MainQuestionPage
         main_tag_page={this.display_tag_page} search_handler={this.searching_by_input} input={this.state.srch_input} q_color={this.state.q_btn_color} t_color={this.state.t_btn_color}
         tid={this.state.tag_id} tag_sort={this.state.sort_by_tag} data={this.state.data} temp_data={this.state.temp_data}
+        login_page={this.display_login_page} welcome_page={this.display_welcome_page}
+        username={this.state.nu_name}
         ask_question={this.display_ask_question} question_content={this.display_question_content} search_status={this.state.searched} />
     }
     // tag page
     else if (this.state.page_num === 1) {
       banner = <Banner main_question_page={this.display_main_page} main_tag_page={this.display_tag_page} search_handler={this.searching_by_input}
-        q_color={this.state.q_btn_color} t_color={this.state.t_btn_color} login_page={this.display_login_page} />
-      main_page = <TagPage main_question_page={this.display_main_page} ask_question={this.display_ask_question} data={this.state.data} />
+        q_color={this.state.q_btn_color} t_color={this.state.t_btn_color}
+        login_page={this.display_login_page} welcome_page={this.display_welcome_page}
+        username={this.state.nu_name} />
+      main_page = <TagPage main_question_page={this.display_main_page} ask_question={this.display_ask_question} data={this.state.data}
+        username={this.state.nu_name} />
     }
 
     // ask question page
     else if (this.state.page_num === 2) {
-      banner = <Banner main_question_page={this.display_main_page} main_tag_page={this.display_tag_page} main_pages={this.main_page} search_handler={this.searching_by_input} />
+      banner = <Banner main_question_page={this.display_main_page} main_tag_page={this.display_tag_page} main_pages={this.main_page} search_handler={this.searching_by_input}
+        login_page={this.display_login_page} welcome_page={this.display_welcome_page}
+        username={this.state.nu_name} />
       main_page = <AskQuestion main_question_page={this.display_main_page} title_handler={this.handle_title} text_handler={this.handle_text}
-        tag_handler={this.handle_tag} user_handler={this.handle_user} title={this.state.nq_title} text={this.state.nq_text} tags={this.state.nq_tags}
-        user={this.state.nq_user} add_question={this.add_new_question} />
+        tag_handler={this.handle_tag} summary_handler={this.handle_summary} title={this.state.nq_title} text={this.state.nq_text} tags={this.state.nq_tags}
+        summary={this.state.nq_summary} add_question={this.add_new_question} />
     }
 
     // question content page
     else if (this.state.page_num === 3) {
       // console.log("question id: "+this.state.quest_id);
-      banner = <Banner main_question_page={this.display_main_page} main_tag_page={this.display_tag_page} main_pages={this.main_page} search_handler={this.searching_by_input} />
+      banner = <Banner main_question_page={this.display_main_page} main_tag_page={this.display_tag_page} main_pages={this.main_page} search_handler={this.searching_by_input}
+        login_page={this.display_login_page} welcome_page={this.display_welcome_page}
+        username={this.state.nu_name} />
       main_page = <QuestionContent ident={this.state.quest_id} data={this.state.data} ask_question={this.display_ask_question}
-        answer_question={this.display_answer_question} />
+        answer_question={this.display_answer_question} up_vote={this.increase_vote} down_vote={this.decrease_vote} target_vote={this.handle_vote} vote={this.state.vote_target}
+        username={this.state.nu_name} />
     }
 
     // Answer the question page
     else if (this.state.page_num === 4) {
-      banner = <Banner main_question_page={this.display_main_page} main_tag_page={this.display_tag_page} main_pages={this.main_page} search_handler={this.searching_by_input} />
+      banner = <Banner main_question_page={this.display_main_page} main_tag_page={this.display_tag_page} main_pages={this.main_page} search_handler={this.searching_by_input}
+        login_page={this.display_login_page} welcome_page={this.display_welcome_page}
+        username={this.state.nu_name} />
       main_page = <AnswerQuestion text={this.state.ans_text} name={this.state.ans_name} answer_text_handler={this.handle_ans_text} post_answer={this.add_new_answer}
         answer_name_handler={this.handle_ans_name} />
     }

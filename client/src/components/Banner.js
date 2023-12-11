@@ -6,6 +6,19 @@ export default class Banner extends React.Component {
         this.searching_by_input = this.searching_by_input.bind(this);
     }
 
+    login_status_button() {
+        if (this.props.username === "") {
+            return (
+                <button id='log' className='side_content' onClick={this.props.welcome_page}>Log In</button>
+            );
+        }
+        else {
+            return (
+                <button id='log' className='side_content' onClick={this.props.welcome_page}>Log Out</button>
+            )
+        }
+    }
+
     searching_by_input(e) {
         if (e.key === "Enter") {
             // this.props.input_handler(e.target.value);
@@ -17,7 +30,7 @@ export default class Banner extends React.Component {
     render() {
         return (
             <div>
-                <button id='login' className='side_content' style={{ backgroundColor: this.props.q_color }} onClick={this.props.login_page}>Login</button>
+                {this.login_status_button()}
                 <h1 id='title'>Fake Stack Overflow</h1>
                 <input id="search_input" type="text" placeholder="Search..." onKeyDown={this.searching_by_input}></input>
 

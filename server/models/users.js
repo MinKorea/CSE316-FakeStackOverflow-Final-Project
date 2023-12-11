@@ -20,6 +20,9 @@ const userSchema = new Schema({
     },
     questions: {
         type: [mongoose.Schema.Types.ObjectId]
+    },
+    answers: {
+        type: [mongoose.Schema.Types.ObjectId]
     }
 });
 

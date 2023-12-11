@@ -6,7 +6,7 @@ export default class LoginPage extends React.Component {
         this.handle_account = this.handle_account.bind(this);
         this.handle_pw = this.handle_pw.bind(this);
     }
-    
+
     handle_account(e) {
         this.props.account_handler(e.target.value);
     }
@@ -15,7 +15,7 @@ export default class LoginPage extends React.Component {
         this.props.pw_handler(e.target.value);
     }
 
-    render(){
+    render() {
         return (
             <>
                 <div>
@@ -31,13 +31,19 @@ export default class LoginPage extends React.Component {
                 <br></br>
                 <div>
                     <p id='login_titles'>Account</p>
-                    <textarea rows={"1"} cols={"30"} id = "login_account" placeholder="example_user@stonybrook.edu" onChange={this.handle_account}></textarea>
+                    <input type="text" id="login_account" placeholder="example_user@stonybrook.edu" onChange={this.handle_account}></input>
+                    {/* 
+                    <textarea rows={"1"} cols={"30"} id="login_account" placeholder="example_user@stonybrook.edu" onChange={this.handle_account}></textarea>
+                    */}
                     <br></br>
                 </div>
                 <br></br>
                 <div>
                     <p id='login_titles'>Password</p>
+                    <input type="password" id="login_pw" placeholder="" onChange={this.handle_pw}></input>
+                    {/*
                     <textarea rows={"1"} cols={"30"} id = "login_pw" placeholder="" onChange={this.handle_pw}></textarea>
+                    */}
                     <br></br>
                 </div>
                 <br></br>
@@ -45,7 +51,7 @@ export default class LoginPage extends React.Component {
                 <br></br>
                 <br></br>
                 <div>
-                    <button id='login_signIn_btn' onClick = {this.props.try_login}>Log in</button>
+                    <button id='login_signIn_btn' onClick={this.props.try_login}>Log in</button>
                     <br></br>
                 </div>
             </>

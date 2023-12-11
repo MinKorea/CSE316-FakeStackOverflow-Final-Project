@@ -3,8 +3,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cor = require("cors");
 const bcrypt = require("bcrypt");
-var session = require('express-session');
-var MongoDBStore = require('connect-mongodb-session')(session);
+// var session = require('express-session');
+// var MongoDBStore = require('connect-mongodb-session')(session);
 const saltRounds = 10;
 
 var count = 0;
@@ -19,6 +19,7 @@ const Tag = require("./models/tags");
 const Answer = require("./models/answers");
 const User = require("./models/users");
 const Comment = require("./models/comments");
+const users = require("./models/users");
 const port = 8000;
 
 app.listen(port, () => {
@@ -140,11 +141,14 @@ app.post("/add_new_answer", async (req, res) => {
 
 app.post("/update_quest_answer", async (req, res) => {
     let target_question = await Question.findById(req.body.q_id);
+    let user = await User.findOne({ email: req.body.email });
     target_question.answers.push(req.body.ans_id);
+    user.answers.push(req.body.ans_id);
     console.log(target_question.views);
-    target_question.views -= 1;
+    // target_question.views -= 1; // views decreased when multiple answers are added
     console.log(target_question.views);
     await target_question.save();
+    await user.save();
 })
 
 app.post("/new_tag_eval", async (req, res) => {
@@ -162,10 +166,18 @@ app.post("/new_tag_eval", async (req, res) => {
         target_q.tags.push(find_tags._id);
     }
     await target_q.save();
+    res.send(target_q._id);
 })
 
 app.post("/add_new_question", async (req, res) => {
     let new_question = new Question(req.body.question);
     await new_question.save();
     res.send(new_question._id);
+})
+
+app.post("/add_user_question", async (req, res) => {
+    let user = await User.findOne({ email: req.body.email });
+    let question = await Question.findById(req.body.q_id);
+    user.questions.push(question);
+    await user.save();
 })

@@ -89,7 +89,6 @@ export default class TagPage extends React.Component {
       }
     })
 
-
     // console.log("inside actual Tag_page class");
     // console.log(tag_row);
     // console.log(this.props);
@@ -99,7 +98,14 @@ export default class TagPage extends React.Component {
           <div id="tag_headers">
             <h1 id="num_tags">{this.props.data.tags.length} Tags</h1>
             <h1 id="all_tags">All Tags</h1>
-            <button className="askQ" id='askQ_tag' onClick={this.props.ask_question}>Ask Question</button>
+            <button className="askQ" id='askQ_tag' onClick={() => {
+              if (this.props.username === "") {
+                alert("You should login for asking the question");
+              }
+              else {
+                this.props.ask_question();
+              }
+            }}>Ask Question</button>
           </div>
           <div id="tags_area">
             {tag_row}

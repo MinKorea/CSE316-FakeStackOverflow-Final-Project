@@ -1,7 +1,8 @@
 import React from 'react';
 
 export default class WelcomePage extends React.Component {
-    render(){
+
+    render() {
         return (
             <>
                 <div>
@@ -21,15 +22,18 @@ export default class WelcomePage extends React.Component {
                     <br></br>
                     <br></br>
                     <br></br>
-                    <button id='welcome_register' onClick = {this.props.register}>Register</button>
+                    <button id='welcome_register' onClick={this.props.register}>Register</button>
                     <br></br>
                     <br></br>
                     <br></br>
-                    <button id='welcome_login' onClick = {this.props.user_login}>Login</button>
+                    <button id='welcome_login' onClick={this.props.user_login}>Login</button>
                     <br></br>
                     <br></br>
                     <br></br>
-                    <button id='welcome_guest' onClick = {this.props.main_question_page}>Guest login</button>
+                    <button id='welcome_guest' onClick={() => {
+                        this.props.user_empty();
+                        this.props.main_question_page();
+                    }}>Guest login</button>
                 </div>
             </>
         )

@@ -14,12 +14,57 @@ export default class MainQuestionPage extends React.Component {
             q_back_color: this.props.q_color,
             t_back_color: this.props.t_color,
             search_value: '',
+            cur_idx: 0
         }
         this.display_question_content = this.display_question_content.bind(this);
         this.newest_clicked = this.newest_clicked.bind(this);
         this.active_clicked = this.active_clicked.bind(this);
         this.unanswered_clicked = this.unanswered_clicked.bind(this);
         this.searching_by_input = this.searching_by_input.bind(this);
+    }
+
+    login_status_button() {
+        if (this.props.username === "") {
+            return (
+                <button id='log' className='side_content' onClick={this.props.welcome_page}>Log In</button>
+            );
+        }
+        else {
+            return (
+                <button id='log' className='side_content' onClick={this.props.welcome_page}>Log Out</button>
+            )
+        }
+    }
+
+    title_template() {
+        return (
+            <div>
+                {this.login_status_button()}
+                <h1 id='title'>Fake Stack Overflow</h1>
+                <input
+                    id="search_input"
+                    type="text"
+                    placeholder="Search..."
+                    value={this.state.search_value}
+                    onChange={this.handleSearchInputChange}
+                    onKeyDown={this.searching_by_input}
+                ></input>
+            </div>
+        )
+    }
+
+    show_questions_template(question_row, counter) {
+        return (
+            <div id="main_questions_load">
+                {this.show_five_questions(question_row, this.state.cur_idx)}
+                <button id='prev_button' className='sort_buttons' onClick={() => {
+                    if (this.state.cur_idx > 0) this.setState({ cur_idx: this.state.cur_idx - 1 });
+                }}>Prev</button>
+                <button id='next_button' className='sort_buttons' onClick={() => {
+                    if ((this.state.cur_idx + 1) < (counter / 5)) this.setState({ cur_idx: this.state.cur_idx + 1 });
+                }}>Next</button>
+            </div>
+        )
     }
 
     async componentDidMount() {
@@ -62,6 +107,15 @@ export default class MainQuestionPage extends React.Component {
         this.setState({ unanswer_filter_checked: true, tag_check: false, searched_page: 0, q_back_color: "lightgray", search_value: '' });
     }
 
+    show_five_questions = (question_row, current_idx) => {
+        let showing_row = [];
+        for (let i = 0; i < 5; i++) {
+            if (5 * current_idx + i === question_row.length) break;
+            showing_row.push(question_row[5 * current_idx + i]);
+        }
+        return showing_row;
+    }
+
     make_row = (quest, tags_data, question_row) => {
         var tag_row = [];
         for (let j = 0; j < quest.tags.length; j++) {
@@ -77,6 +131,7 @@ export default class MainQuestionPage extends React.Component {
                 <div id="section1">
                     <p id="quest_num_ans">{quest.answers.length} answers</p>
                     <p id="quest_num_view">{quest.views} views</p>
+                    <p id="quest_num_vote">{quest.votes} votes</p>
                 </div>
 
                 <div id="section2">
@@ -90,7 +145,6 @@ export default class MainQuestionPage extends React.Component {
                     <p id="quest_user">{quest.asked_by} </p>
                     <p id="quest_asked"> asked</p>
                     <p id="quest_time">{help.time_log(quest.ask_date_time)}</p>
-
                 </div>
             </div>
         )
@@ -101,6 +155,8 @@ export default class MainQuestionPage extends React.Component {
         var tags_data = this.props.data.tags;
         let counter = 0;
         let q_string = 'question';
+
+        console.log(this.state.cur_idx);
 
         if (this.state.searched_page === 1) {
             console.log("passed search == 1")
@@ -113,16 +169,7 @@ export default class MainQuestionPage extends React.Component {
             if (counter < 1) {
                 return (
                     <div>
-                        <h1 id='title'>Fake Stack Overflow</h1>
-                        <input
-                            id="search_input"
-                            type="text"
-                            placeholder="Search..."
-                            value={this.state.search_value}
-                            onChange={this.handleSearchInputChange}
-                            onKeyDown={this.searching_by_input}>
-                        </input>
-
+                        {this.title_template()}
                         <div id='main_left'>
                             <br></br>
                             <br></br>
@@ -140,7 +187,15 @@ export default class MainQuestionPage extends React.Component {
                         <div id='main_right'>
                             <div>
                                 <h2 id='allQ'>Search Results</h2>
-                                <button className='askQ' id='askQ_main' onClick={this.props.ask_question}>Ask Question</button>
+                                <button className='askQ' id='askQ_main' onClick={() => {
+                                    if (this.props.username === "") {
+                                        alert("You should login for asking the question");
+                                    }
+                                    else {
+                                        this.props.ask_question();
+                                    }
+
+                                }}>Ask Question</button>
                             </div>
                             <div id='number_and_sorting_buttons'>
                                 <p id='numQ'>{counter + ' ' + q_string}</p>
@@ -162,16 +217,7 @@ export default class MainQuestionPage extends React.Component {
             else {
                 return (
                     <div>
-                        <h1 id='title'>Fake Stack Overflow</h1>
-                        <input
-                            id="search_input"
-                            type="text"
-                            placeholder="Search..."
-                            value={this.state.search_value}
-                            onChange={this.handleSearchInputChange}
-                            onKeyDown={this.searching_by_input}
-                        ></input>
-
+                        {this.title_template()}
                         <div id='main_left'>
                             <br></br>
                             <br></br>
@@ -201,9 +247,7 @@ export default class MainQuestionPage extends React.Component {
                                 </div>
                                 <br></br>
                             </div>
-                            <div id="main_questions_load">
-                                {question_row}
-                            </div>
+                            {this.show_questions_template(question_row, counter)}
                         </div>
                     </div>
                 );
@@ -237,18 +281,12 @@ export default class MainQuestionPage extends React.Component {
 
             if (counter > 1) q_string = 'questions';
 
+            console.log("Counter: ", counter);
+            console.log(counter / 5);
+
             return (
                 <div>
-                    <h1 id='title'>Fake Stack Overflow</h1>
-                    <input
-                        id="search_input"
-                        type="text"
-                        placeholder="Search..."
-                        value={this.state.search_value}
-                        onChange={this.handleSearchInputChange}
-                        onKeyDown={this.searching_by_input}>
-                    </input>
-
+                    {this.title_template()}
                     <div id='main_left'>
                         <br></br>
                         <br></br>
@@ -266,7 +304,14 @@ export default class MainQuestionPage extends React.Component {
                     <div id='main_right'>
                         <div>
                             <h2 id='allQ'>All Questions</h2>
-                            <button className='askQ' id='askQ_main' onClick={this.props.ask_question}>Ask Question</button>
+                            <button className='askQ' id='askQ_main' onClick={() => {
+                                if (this.props.username === "") {
+                                    alert("You should login for asking the question");
+                                }
+                                else {
+                                    this.props.ask_question();
+                                }
+                            }}>Ask Question</button>
                         </div>
                         <div id='number_and_sorting_buttons'>
                             <p id='numQ'>{counter + ' ' + q_string}</p>
@@ -278,9 +323,7 @@ export default class MainQuestionPage extends React.Component {
                             </div>
                             <br></br>
                         </div>
-                        <div id="main_questions_load">
-                            {question_row}
-                        </div>
+                        {this.show_questions_template(question_row, counter)}
                     </div>
                 </div>
             );
