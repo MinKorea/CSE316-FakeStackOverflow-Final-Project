@@ -21,6 +21,14 @@ const userSchema = new Schema({
     questions: {
         type: [mongoose.Schema.Types.ObjectId]
     },
+    question_vote_map: {
+        type: Map,
+        default: new Map()
+    },
+    answer_vote_map: {
+        type: Map,
+        default: new Map()
+    },
     answers: {
         type: [mongoose.Schema.Types.ObjectId]
     }

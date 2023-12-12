@@ -16,7 +16,7 @@ export default class FakeStackOverflow extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: { questions: [], answers: [], tags: [] },
+      data: { questions: [], answers: [], tags: [], users: [], comments: [] },
       temp_data: { questions: [], answers: [], tags: [] },
       page_num: 100,
       nq_title: "",
@@ -228,14 +228,15 @@ export default class FakeStackOverflow extends React.Component {
     var count = 0;
     user_for_register.forEach(() => {
       for (let i = 0; i < user_for_register.length; i++) {
-        if (this.state.nu_account === user_for_register[i].email) {
+        if (this.state.nu_account === user_for_register[i].email
+          || this.state.nu_name === user_for_register[i].name) {
           count += 1;
         }
       }
     })
     if (count !== 0) {
       err.push("It is duplicated account. Use another email please\n");
-      alert("It is duplicated account. Use another email please\n");
+      alert("The username or email is already registered. Try another user id or email please\n");
     }
 
     // send err messages
@@ -309,32 +310,67 @@ export default class FakeStackOverflow extends React.Component {
 
   // increase vote of question
   increase_vote = async (id) => {
-    await axios.post("http://localhost:8000/vote_inc", {
-      q_id: id
-    })
+    console.log("Increase_vote_before pass");
 
-    console.log("Increase_view_post passed");
+    if (this.state.nu_name === "") alert("Login is required for voting");
+    else {
+      await axios.post("http://localhost:8000/vote_inc", {
+        email: this.state.nu_account,
+        q_id: id
+      }).then(res => {
 
-    await this.componentDidMount();
-
-    // this.state.data.questions.forEach(q => {
-    //   if (q._id === id) console.log(q);
-    // });
+        this.componentDidMount();
+        console.log("Increase_vote passed");
+        return res.votes;
+      });
+    }
   }
 
   // decrease vote of question
   decrease_vote = async (id) => {
-    await axios.post("http://localhost:8000/vote_dec", {
-      q_id: id
-    })
+    if (this.state.nu_name === "") alert("Login is required for voting");
+    else {
+      await axios.post("http://localhost:8000/vote_dec", {
+        email: this.state.nu_account,
+        q_id: id
+      }).then(res => {
 
-    console.log("Decrease_view_post passed");
+        this.componentDidMount();
+        console.log("Decrease_vote passed");
+        return res.votes;
+      });
+    }
+  }
 
-    await this.componentDidMount();
+  // increase vote of answer
+  increase_vote_answer = async (id) => {
+    console.log("Increase_vote_before pass");
 
-    // this.state.data.questions.forEach(q => {
-    //   if (q._id === id) console.log(q);
-    // });
+    if (this.state.nu_name === "") alert("Login is required for voting");
+    else {
+      await axios.post("http://localhost:8000/vote_ans_inc", {
+        email: this.state.nu_account,
+        a_id: id
+      }).then(res => {
+        this.componentDidMount();
+        console.log("Increase_vote passed");
+        return res.votes;
+      });
+    }
+  }
+  // decrease vote of answer
+  decrease_vote_answer = async (id) => {
+    if (this.state.nu_name === "") alert("Login is required for voting");
+    else {
+      await axios.post("http://localhost:8000/vote_ans_dec", {
+        email: this.state.nu_account,
+        a_id: id
+      }).then(res => {
+        this.componentDidMount();
+        console.log("Decrease_vote passed");
+        return res.votes;
+      });
+    }
   }
 
   // add new question
@@ -631,6 +667,7 @@ export default class FakeStackOverflow extends React.Component {
         username={this.state.nu_name} />
       main_page = <QuestionContent ident={this.state.quest_id} data={this.state.data} ask_question={this.display_ask_question}
         answer_question={this.display_answer_question} up_vote={this.increase_vote} down_vote={this.decrease_vote} target_vote={this.handle_vote} vote={this.state.vote_target}
+        up_vote_answer={this.increase_vote_answer} down_vote_answer={this.decrease_vote_answer}
         username={this.state.nu_name} />
     }
 

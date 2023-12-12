@@ -58,7 +58,7 @@ app.post("/login", async (req, res) => {
     // console.log("get into login post in server.js")
     // console.log("account.pw: " + account.password);
 
-    console.log(account);
+    // console.log(account);
 
     if (account === null) {
         res.send("notMatched")
@@ -79,27 +79,6 @@ app.post("/login", async (req, res) => {
             }
         });
     }
-
-    // if (account.length === 0) {
-    //     // console.log("User not found")
-    //     res.send("notMatched")
-    // }
-    // else {
-    //     // console.log("User found")
-    //     let pw = account.password;
-    //     bcrypt.compare(req.body.password, pw, function (err, result) {
-    //         // console.log("result: "+ result)
-    //         if (result == false) {
-    //             // console.log("User found but pw is not matched");
-    //             res.send("pwNotMatched");
-    //         }
-    //         else {
-    //             // console.log("User found and pw is matched");
-    //             // console.log(pw);
-    //             res.send(account);
-    //         }
-    //     });
-    // }
 })
 
 app.get("/", async (req, res) => {
@@ -145,10 +124,16 @@ app.post("/update_quest_answer", async (req, res) => {
     target_question.answers.push(req.body.ans_id);
     user.answers.push(req.body.ans_id);
     console.log(target_question.views);
-    // target_question.views -= 1; // views decreased when multiple answers are added
+    // target_question.views -= 1; 
     console.log(target_question.views);
     await target_question.save();
     await user.save();
+
+    for await (let u of User.find()) {
+        u.answer_vote_map.set(req.body.ans_id, 0);
+        console.log(u);
+        await u.save();
+    }
 })
 
 app.post("/new_tag_eval", async (req, res) => {
@@ -179,5 +164,109 @@ app.post("/add_user_question", async (req, res) => {
     let user = await User.findOne({ email: req.body.email });
     let question = await Question.findById(req.body.q_id);
     user.questions.push(question);
+    // console.log(question._id);
+    // user.question_vote_map.set(question._id, 0);
     await user.save();
+
+    for await (let u of User.find()) {
+        u.question_vote_map.set(question._id, 0);
+        console.log(u);
+        await u.save();
+    }
+
+})
+
+app.post("/vote_inc", async (req, res) => {
+    console.log("In vote_inc function");
+    let user = await User.findOne({ email: req.body.email });
+    let question = await Question.findById(req.body.q_id);
+    let question_owner = await User.findOne({ name: question.asked_by });
+
+    if (user.question_vote_map.get(question._id) === 0) {
+        user.question_vote_map.set(question._id, 1);
+        question.votes++;
+        question_owner.reputation += 5;
+
+    }
+    else if (user.question_vote_map.get(question._id) === -1) {
+        user.question_vote_map.set(question._id, 0);
+        question.votes++;
+        question_owner.reputation += 10;
+    }
+
+    await user.save();
+    await question.save();
+    await question_owner.save();
+    res.send(question);
+})
+
+app.post("/vote_dec", async (req, res) => {
+    let user = await User.findOne({ email: req.body.email });
+    let question = await Question.findById(req.body.q_id);
+    let question_owner = await User.findOne({ name: question.asked_by });
+
+    if (user.question_vote_map.get(question._id) === 1) {
+        user.question_vote_map.set(question._id, 0);
+        question.votes--;
+        question_owner.reputation -= 5;
+
+    }
+    else if (user.question_vote_map.get(question._id) === 0) {
+        user.question_vote_map.set(question._id, -1);
+        question.votes--;
+        question_owner.reputation -= 10;
+    }
+
+    await user.save();
+    await question.save();
+    await question_owner.save();
+    res.send(question);
+})
+
+app.post("/vote_ans_inc", async (req, res) => {
+    console.log("In vote_ans_inc function");
+    let user = await User.findOne({ email: req.body.email });
+    let answer = await Answer.findById(req.body.a_id);
+    let answer_owner = await User.findOne({ name: answer.ans_by });
+
+    if (user.answer_vote_map.get(answer._id) === 0) {
+        user.answer_vote_map.set(answer._id, 1);
+        answer.votes++;
+        answer_owner.reputation += 5;
+
+    }
+    else if (user.answer_vote_map.get(answer._id) === -1) {
+        user.answer_vote_map.set(answer._id, 0);
+        answer.votes++;
+        answer_owner.reputation += 10;
+    }
+
+    await user.save();
+    await answer.save();
+    await answer_owner.save();
+    res.send(answer);
+})
+
+app.post("/vote_ans_dec", async (req, res) => {
+    console.log("In vote_ans_dec function");
+    let user = await User.findOne({ email: req.body.email });
+    let answer = await Answer.findById(req.body.a_id);
+    let answer_owner = await User.findOne({ name: answer.ans_by });
+
+    if (user.answer_vote_map.get(answer._id) === 1) {
+        user.answer_vote_map.set(answer._id, 0);
+        answer.votes--;
+        answer_owner.reputation -= 5;
+
+    }
+    else if (user.answer_vote_map.get(answer._id) === 0) {
+        user.answer_vote_map.set(answer._id, -1);
+        answer.votes--;
+        answer_owner.reputation -= 10;
+    }
+
+    await user.save();
+    await answer.save();
+    await answer_owner.save();
+    res.send(answer);
 })

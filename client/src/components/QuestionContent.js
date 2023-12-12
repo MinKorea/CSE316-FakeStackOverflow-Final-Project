@@ -8,7 +8,8 @@ export default class QuestionContent extends React.Component {
         this.state = {
             question_text: "",
             answer_text: "",
-            cur_idx: 0
+            cur_idx: 0,
+            question_vote: 0
         }
     }
 
@@ -49,9 +50,13 @@ export default class QuestionContent extends React.Component {
                     <div id="q_content_answers" key={a._id}>
                         <div>
                             <div id="q_content_ans_vote">
-                                <button onClick={this.props.up_vote}>up</button>
+                                <button onClick={() => {
+                                    this.props.up_vote_answer(a._id);
+                                }}>up</button>
                                 <p id='q_content_ans_num_vote'>{a.votes} votes</p>
-                                <button onClick={this.props.down_vote}>down</button>
+                                <button onClick={() => {
+                                    this.props.down_vote_answer(a._id);
+                                }}>down</button>
                             </div>
                             <p id="q_content_ans_text" dangerouslySetInnerHTML={{ __html: a.text.replace(/\[([\w\s\d]+)\]\((https?:\/\/[\w\d./?=#]+)\)/g, '<a href="$2" target="_blank">$1</a>') }}></p>
                             <div id="content_section">
@@ -67,13 +72,18 @@ export default class QuestionContent extends React.Component {
 
         return (
             <div id='main_right'>
-
                 <div id="question_content_page">
                     <div id="q_content_area">
                         <div id="q_section1">
-                            <button onClick={this.props.up_vote}>up</button>
+                            <button onClick={() => {
+                                let num = this.props.up_vote(q._id);
+                                this.setState({ question_vote: num });
+                            }}>up</button>
                             <h3 id='q_content_num_vote'>{q.votes} votes</h3>
-                            <button onClick={this.props.down_vote}>down</button>
+                            <button onClick={() => {
+                                let num = this.props.down_vote(q._id);
+                                this.setState({ question_vote: num });
+                            }}>down</button>
                             <br></br>
                             <br></br>
                             <h3 id='q_content_num_ans'>{counter} answers</h3>
@@ -98,7 +108,6 @@ export default class QuestionContent extends React.Component {
                                 <p id="q_content_time">asked {help.time_log(q.ask_date_time)}</p>
                             </div>
                         </div>
-
                     </div>
                     <div id='q_content_answer_area'>
                         {this.show_five_contents(q_page, this.state.cur_idx)}
