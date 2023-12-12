@@ -13,6 +13,7 @@ export default class MainQuestionPage extends React.Component {
             searched_page: this.props.search_status,
             q_back_color: this.props.q_color,
             t_back_color: this.props.t_color,
+            u_back_color: this.props.u_color,
             search_value: '',
             cur_idx: 0
         }
@@ -182,6 +183,11 @@ export default class MainQuestionPage extends React.Component {
                             <br></br>
                             <br></br>
                             <button id='tag_menu' className='side_content' style={{ backgroundColor: this.state.t_back_color }} onClick={this.props.main_tag_page}>Tags</button>
+                            <br></br>
+                            <br></br>
+                            <br></br>
+                            <br></br>
+                            <button id='user_menu' className='side_content' style={{ backgroundColor: this.props.u_back_color }} onClick={this.props.main_user_page}>Users</button>
                         </div>
 
                         <div id='main_right'>
@@ -230,6 +236,11 @@ export default class MainQuestionPage extends React.Component {
                             <br></br>
                             <br></br>
                             <button id='tag_menu' className='side_content' style={{ backgroundColor: this.state.t_back_color }} onClick={this.props.main_tag_page}>Tags</button>
+                            <br></br>
+                            <br></br>
+                            <br></br>
+                            <br></br>
+                            <button id='user_menu' className='side_content' style={{ backgroundColor: this.props.u_back_color }} onClick={this.props.main_user_page}>Users</button>
                         </div>
 
                         <div id='main_right'>
@@ -299,6 +310,11 @@ export default class MainQuestionPage extends React.Component {
                         <br></br>
                         <br></br>
                         <button id='tag_menu' className='side_content' style={{ backgroundColor: this.state.t_back_color }} onClick={this.props.main_tag_page}>Tags</button>
+                        <br></br>
+                        <br></br>
+                        <br></br>
+                        <br></br>
+                        <button id='user_menu' className='side_content' style={{ backgroundColor: this.props.u_back_color }} onClick={this.props.main_user_page}>Users</button>
                     </div>
 
                     <div id='main_right'>

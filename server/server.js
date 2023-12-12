@@ -181,3 +181,11 @@ app.post("/add_user_question", async (req, res) => {
     user.questions.push(question);
     await user.save();
 })
+
+app.post("/delete_question", async (req, res) => {
+    await Question.deleteOne({_id: req.body.q_id});
+    console.log("Came into server.js/app.post2");
+
+    // console.log("Came into server.js/app.post3");
+    res.send("deleted");
+})
