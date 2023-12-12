@@ -43,6 +43,11 @@ export default class Banner extends React.Component {
                     <br></br>
                     <br></br>
                     <button id='tag_menu' className='side_content' style={{ backgroundColor: this.props.t_color }} onClick={this.props.main_tag_page}>Tags</button>
+                    <br></br>
+                    <br></br>
+                    <br></br>
+                    <br></br>
+                    <button id='user_menu' className='side_content' style={{ backgroundColor: this.props.u_color }} onClick={this.props.main_user_page}>Users</button>
                 </div>
             </div>
         )

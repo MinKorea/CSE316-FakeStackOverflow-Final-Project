@@ -31,6 +31,10 @@ const userSchema = new Schema({
     },
     answers: {
         type: [mongoose.Schema.Types.ObjectId]
+    },
+    joined_date: {
+        type: Date,
+        default: new Date()
     }
 });
 

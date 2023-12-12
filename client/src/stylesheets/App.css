@@ -187,6 +187,11 @@ body {
     border-bottom: 1px dashed black;
 }
 
+#user_page_under_dash {
+    padding-bottom: 10px;
+    border-bottom: 1px dashed black;
+}
+
 #section1 {
     display: inline-block;
     position: relative;
@@ -562,4 +567,30 @@ body {
     cursor: pointer;
     background-color: dodgerblue;
     border-radius: 7%;
+}
+
+#not_registered_user {
+    padding-top: 5%;
+    margin-left: 10%;
+}
+
+#user_info {
+    margin-left: 50px;
+}
+
+#delete_question {
+    margin-left: 10px;
+    border: 1px solid red;
+    background-color: black;
+    color: white;
+    cursor: pointer;
+}
+
+#see_all_user {
+    margin-left: 50px;
+    border: 1px solid black;
+    color: white;
+    padding: 10px 20px;
+    cursor: pointer;
+    background-color: green;
 }

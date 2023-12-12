@@ -10,6 +10,7 @@ import AskQuestion from "./AskQuestion";
 import QuestionContent from './QuestionContent';
 import AnswerQuestion from './AnswerQuestion';
 import HelperFunction from './HelperFunctions.js';
+import UserProfile from './UserProfile.js';
 var help = new HelperFunction();
 
 export default class FakeStackOverflow extends React.Component {
@@ -17,7 +18,7 @@ export default class FakeStackOverflow extends React.Component {
     super(props);
     this.state = {
       data: { questions: [], answers: [], tags: [], users: [], comments: [] },
-      temp_data: { questions: [], answers: [], tags: [] },
+      temp_data: { questions: [], answers: [], tags: [], users: [], comments: [] },
       page_num: 100,
       nq_title: "",
       nq_text: "",
@@ -31,6 +32,7 @@ export default class FakeStackOverflow extends React.Component {
       sort_by_tag: false,
       q_btn_color: "lightgray",
       t_btn_color: "transparent",
+      u_btn_color: "transparent",
       is_view_inc: false,
       nu_name: "",
       nu_pw: "",
@@ -87,7 +89,8 @@ export default class FakeStackOverflow extends React.Component {
       sort_by_tag: is_tag,
       tag_id: tid,
       q_btn_color: "lightgray",
-      t_btn_color: "transparent"
+      t_btn_color: "transparent",
+      u_btn_color: "transparent",
     }));
     this.componentDidMount();
   }
@@ -97,7 +100,8 @@ export default class FakeStackOverflow extends React.Component {
       page_num: 1,
       tag_id: id,
       q_btn_color: "transparent",
-      t_btn_color: "lightgray"
+      t_btn_color: "lightgray",
+      u_btn_color: "transparent",
     }));
   }
 
@@ -132,7 +136,17 @@ export default class FakeStackOverflow extends React.Component {
       page_num: 0,
       searched: 1,
       q_btn_color: "transparent",
-      t_btn_color: "transparent"
+      t_btn_color: "transparent",
+      u_btn_color: "transparent",
+    }))
+  }
+
+  display_user_page = () => {
+    this.setState(() => ({
+      page_num: 5,
+      q_btn_color: "transparent",
+      t_btn_color: "transparent",
+      u_btn_color: "lightgray",
     }))
   }
 
@@ -371,6 +385,23 @@ export default class FakeStackOverflow extends React.Component {
         return res.votes;
       });
     }
+  }
+
+  // delete question
+  delete_question = async (id) => {
+    await axios.post("http://localhost:8000/delete_question", {
+      q_id: id
+    }).then((res) => {
+      if (res.data === "deleted") {
+        alert("Question deleted");
+        console.log("lets display user page");
+        this.componentDidMount();
+        this.display_user_page();
+      }
+      else {
+        alert("Failed to delete question")
+      }
+    })
   }
 
   // add new question
@@ -633,16 +664,16 @@ export default class FakeStackOverflow extends React.Component {
     else if (this.state.page_num === 0) {
       // banner = <Banner main_question_page={this.display_main_page} main_tag_page={this.display_tag_page} search={this.searching_by_input} input={this.state.srch_input} />    //search handle function need to add
       main_page = <MainQuestionPage
-        main_tag_page={this.display_tag_page} search_handler={this.searching_by_input} input={this.state.srch_input} q_color={this.state.q_btn_color} t_color={this.state.t_btn_color}
-        tid={this.state.tag_id} tag_sort={this.state.sort_by_tag} data={this.state.data} temp_data={this.state.temp_data}
+        main_tag_page={this.display_tag_page} main_user_page={this.display_user_page} search_handler={this.searching_by_input} input={this.state.srch_input} q_color={this.state.q_btn_color} t_color={this.state.t_btn_color}
+        u_color={this.state.u_btn_color} tid={this.state.tag_id} tag_sort={this.state.sort_by_tag} data={this.state.data} temp_data={this.state.temp_data}
         login_page={this.display_login_page} welcome_page={this.display_welcome_page}
         username={this.state.nu_name}
         ask_question={this.display_ask_question} question_content={this.display_question_content} search_status={this.state.searched} />
     }
     // tag page
     else if (this.state.page_num === 1) {
-      banner = <Banner main_question_page={this.display_main_page} main_tag_page={this.display_tag_page} search_handler={this.searching_by_input}
-        q_color={this.state.q_btn_color} t_color={this.state.t_btn_color}
+      banner = <Banner main_question_page={this.display_main_page} main_tag_page={this.display_tag_page} main_user_page={this.display_user_page} search_handler={this.searching_by_input}
+        q_color={this.state.q_btn_color} t_color={this.state.t_btn_color} u_color={this.state.u_btn_color}
         login_page={this.display_login_page} welcome_page={this.display_welcome_page}
         username={this.state.nu_name} />
       main_page = <TagPage main_question_page={this.display_main_page} ask_question={this.display_ask_question} data={this.state.data}
@@ -651,7 +682,7 @@ export default class FakeStackOverflow extends React.Component {
 
     // ask question page
     else if (this.state.page_num === 2) {
-      banner = <Banner main_question_page={this.display_main_page} main_tag_page={this.display_tag_page} main_pages={this.main_page} search_handler={this.searching_by_input}
+      banner = <Banner main_question_page={this.display_main_page} main_tag_page={this.display_tag_page} main_user_page={this.display_user_page} main_pages={this.main_page} search_handler={this.searching_by_input}
         login_page={this.display_login_page} welcome_page={this.display_welcome_page}
         username={this.state.nu_name} />
       main_page = <AskQuestion main_question_page={this.display_main_page} title_handler={this.handle_title} text_handler={this.handle_text}
@@ -662,7 +693,7 @@ export default class FakeStackOverflow extends React.Component {
     // question content page
     else if (this.state.page_num === 3) {
       // console.log("question id: "+this.state.quest_id);
-      banner = <Banner main_question_page={this.display_main_page} main_tag_page={this.display_tag_page} main_pages={this.main_page} search_handler={this.searching_by_input}
+      banner = <Banner main_question_page={this.display_main_page} main_tag_page={this.display_tag_page} main_user_page={this.display_user_page} main_pages={this.main_page} search_handler={this.searching_by_input}
         login_page={this.display_login_page} welcome_page={this.display_welcome_page}
         username={this.state.nu_name} />
       main_page = <QuestionContent ident={this.state.quest_id} data={this.state.data} ask_question={this.display_ask_question}
@@ -673,11 +704,20 @@ export default class FakeStackOverflow extends React.Component {
 
     // Answer the question page
     else if (this.state.page_num === 4) {
-      banner = <Banner main_question_page={this.display_main_page} main_tag_page={this.display_tag_page} main_pages={this.main_page} search_handler={this.searching_by_input}
+      banner = <Banner main_question_page={this.display_main_page} main_tag_page={this.display_tag_page} main_user_page={this.display_user_page} main_pages={this.main_page} search_handler={this.searching_by_input}
         login_page={this.display_login_page} welcome_page={this.display_welcome_page}
         username={this.state.nu_name} />
       main_page = <AnswerQuestion text={this.state.ans_text} name={this.state.ans_name} answer_text_handler={this.handle_ans_text} post_answer={this.add_new_answer}
         answer_name_handler={this.handle_ans_name} />
+    }
+
+    // User profile page
+    else if (this.state.page_num === 5) {
+      banner = <Banner main_question_page={this.display_main_page} main_tag_page={this.display_tag_page} main_user_page={this.display_user_page} main_pages={this.main_page} search_handler={this.searching_by_input}
+        login_page={this.display_login_page} welcome_page={this.display_welcome_page} q_color={this.state.q_btn_color} t_color={this.state.t_btn_color} u_color={this.state.u_btn_color}
+        username={this.state.nu_name} />
+      main_page = <UserProfile name={this.state.nu_name} ask_question={this.display_ask_question} question_content={this.display_question_content}
+        question_delete={this.delete_question} data={this.state.data} />
     }
 
     return (

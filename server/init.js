@@ -89,7 +89,7 @@ function commentsCreate(text, comment_by) {
 //     });
 // }
 
-async function userCreate(name, email, passwords, reputation, questions) {
+async function userCreate(name, email, passwords, reputation, questions, joined_date) {
 
   let userdetail = {
     name: name,
@@ -98,6 +98,7 @@ async function userCreate(name, email, passwords, reputation, questions) {
     reputation: reputation,
     questions: questions
   }
+  if (joined_date != false) userdetail.joined_date = joined_date;
   let user = new User(userdetail);
 
   console.log("before bcrypt:" + user.password);
@@ -132,9 +133,9 @@ const populate = async () => {
   let a3 = await answerCreate('Consider using apply() instead; commit writes its data to persistent storage immediately, whereas apply will handle it in the background.', 'abaya', false);
   let a4 = await answerCreate('YourPreference yourPrefrence = YourPreference.getInstance(context); yourPreference.saveData(YOUR_KEY,YOUR_VALUE);', 'alia', false, [c1, c3]);
   let a5 = await answerCreate('I just found all the above examples just too confusing, so I wrote my own. ', 'sana', false, [c3, c4]);
-  let q1 = await questionCreate('Programmatically navigate using React router', 'the alert shows the proper index for the li clicked, and when I alert the variable within the last function I\'m calling, moveToNextImage(stepClicked), the same value shows but the animation isn\'t happening. This works many other ways, but I\'m trying to pass the index value of the list item clicked to use for the math to calculate.', [t1, t2], [a1, a2], 'Joji John', false, false, 'question1 summary', [c1, c2]);
-  let q2 = await questionCreate('android studio save string shared preference, start activity and load the saved string', 'I am using bottom navigation view but am using custom navigation, so my fragments are not recreated every time i switch to a different view. I just hide/show my fragments depending on the icon selected. The problem i am facing is that whenever a config change happens (dark/light theme), my app crashes. I have 2 fragments in this activity and the below code is what i am using to refrain them from being recreated.', [t3, t4, t2], [a3, a4, a5], 'saltyPeter', false, 121, 'question2 summary', [c1]);
-  await userCreate('admin', 'admin316@sbu.edu', 'unexpected', 100, [q1, q2]);
+  let q1 = await questionCreate('Programmatically navigate using React router', 'the alert shows the proper index for the li clicked, and when I alert the variable within the last function I\'m calling, moveToNextImage(stepClicked), the same value shows but the animation isn\'t happening. This works many other ways, but I\'m trying to pass the index value of the list item clicked to use for the math to calculate.', [t1, t2], [a1, a2], 'admin', false, false, 'question1 summary', [c1, c2]);
+  let q2 = await questionCreate('android studio save string shared preference, start activity and load the saved string', 'I am using bottom navigation view but am using custom navigation, so my fragments are not recreated every time i switch to a different view. I just hide/show my fragments depending on the icon selected. The problem i am facing is that whenever a config change happens (dark/light theme), my app crashes. I have 2 fragments in this activity and the below code is what i am using to refrain them from being recreated.', [t3, t4, t2], [a3, a4, a5], 'admin', false, 121, 'question2 summary', [c1]);
+  await userCreate('admin', 'admin316@sbu.edu', 'unexpected', 1000, [q1, q2], false);
   if (db) db.close();
   console.log('done');
 }
