@@ -9,6 +9,8 @@ const saltRounds = 10;
 
 var count = 0;
 
+var count_for_map = 0;
+
 const app = express();
 app.use(cor());
 app.use(express.json());
@@ -96,6 +98,19 @@ app.get("/", async (req, res) => {
         users: user,
         comments: comment
     };
+    if (count_for_map === 0) {
+        for await (let u of User.find()) {
+            question.forEach((q) => {
+                u.question_vote_map.set(q._id, 0);
+            })
+            answer.forEach((a) => {
+                u.answer_vote_map.set(a._id, 0);
+            })
+            console.log(u);
+            await u.save();
+        }
+        count_for_map = 1;
+    }
     // console.log(all);
     res.send(all);
 });
