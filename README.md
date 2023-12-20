@@ -1,4 +1,4 @@
-##Introduction
+## Introduction
 This application is inspired by the actual stackoverflow.com. The application is developed using the React framework for the front end. For the backend, the application use MongoDB, a non-relational database. The web server is in Nodejs using the Express framework for server-side routing. The application secures sensitive data such as passwords using the bcrypt library in Node. 
 
 
